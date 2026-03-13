@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+@theme {
+  --font-pixel: var(--font-pixel);
+
+  /* Pixel art color palette */
+  --color-guild-gold: #f5c842;
+  --color-guild-dark: #1a1008;
+  --color-guild-brown: #5c3317;
+  --color-guild-parchment: #f0e0a0;
+  --color-guild-stone: #8b7355;
+  --color-pixel-red: #c0392b;
+  --color-pixel-green: #27ae60;
+  --color-pixel-blue: #2980b9;
+  --color-pixel-purple: #8e44ad;
+  --color-exp-bar: #4ade80;
+  --color-exp-bg: #1a2e1a;
+}
+
+/* Apply pixel font globally */
+* {
+  font-family: var(--font-pixel), monospace;
+}
+
+/* Pixel-perfect rendering for images */
+img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1008;
+}
+::-webkit-scrollbar-thumb {
+  background: #5c3317;
+  border: 2px solid #f5c842;
+}
+
+/* ===== Hotspot Pulsing Animation ===== */
+@keyframes hotspot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 200, 66, 0.0),
+                inset 0 0 0 2px rgba(245, 200, 66, 0.0);
+    opacity: 0.6;
+  }
+  50% {
+    box-shadow: 0 0 20px 8px rgba(245, 200, 66, 0.5),
+                inset 0 0 0 2px rgba(245, 200, 66, 0.8);
+    opacity: 1;
+  }
+}
+
+.hotspot {
+  animation: hotspot-pulse 2s ease-in-out infinite;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* ===== Loading Dots Animation ===== */
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+  40%            { transform: translateY(-8px); opacity: 1; }
+}
+
+.loading-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #f5c842;
+  animation: dot-bounce 1.4s infinite ease-in-out both;
+}
+.loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dot:nth-child(2) { animation-delay: -0.16s; }
+.loading-dot:nth-child(3) { animation-delay: 0s; }
+
+/* ===== Pixel Button ===== */
+.pixel-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #f5c842;
+  color: #1a1008;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 4px 4px 0 #5c3317;
+  transition: transform 0.1s, box-shadow 0.1s;
+  image-rendering: pixelated;
+}
+.pixel-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #5c3317;
+}
+.pixel-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 #5c3317;
+}
+.pixel-btn:disabled {
+  background: #888;
+  color: #444;
+  cursor: not-allowed;
+  box-shadow: 4px 4px 0 #333;
+}
+
+/* ===== Pixel Card ===== */
+.pixel-card {
+  background: rgba(26, 16, 8, 0.92);
+  border: 3px solid #f5c842;
+  box-shadow: 6px 6px 0 #5c3317;
+  padding: 24px;
+}
+
+/* ===== Quest Star Rating ===== */
+.star-filled { color: #f5c842; }
+.star-empty  { color: #333; }
+
+/* ===== EXP bar ===== */
+@keyframes exp-fill {
+  from { width: 0; }
+}
+.exp-bar-fill {
+  animation: exp-fill 0.8s ease-out;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
