@@ -79,11 +79,9 @@ export default function TownScene({ user, onEnterGuild, onLogout }: TownScenePro
                     height: "clamp(180px, 28vh, 320px)",
                 }}
             >
-                <Image
+                <img
                     src="/guild-hall.png"
                     alt="Guild Hall"
-                    width={500}
-                    height={400}
                     style={{
                         imageRendering: "pixelated",
                         width: "100%",
