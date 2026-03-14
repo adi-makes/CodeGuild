@@ -44,7 +44,7 @@ export default function GuildInteriorScene({
                 <button
                     className="pixel-btn"
                     onClick={onLeaveGuild}
-                    style={{ fontSize: "6px", padding: "8px 12px" }}
+                    style={{ fontSize: "10px", padding: "10px 16px" }}
                 >
                     ← Exit to Town
                 </button>
@@ -131,7 +131,7 @@ export default function GuildInteriorScene({
                     style={{
                         background: "rgba(26, 16, 8, 0.88)",
                         border: "1px solid #f5c842",
-                        padding: "4px 8px",
+                        padding: "8px 16px",
                         marginBottom: "4px",
                         textAlign: "center",
                     }}
@@ -139,7 +139,7 @@ export default function GuildInteriorScene({
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "6px",
+                            fontSize: "10px",
                             color: "#f5c842",
                             margin: 0,
                         }}
@@ -163,14 +163,14 @@ export default function GuildInteriorScene({
                     style={{
                         background: "rgba(26, 16, 8, 0.88)",
                         border: "1px solid #f5c842",
-                        padding: "4px 8px",
+                        padding: "8px 16px",
                         textAlign: "center",
                     }}
                 >
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "6px",
+                            fontSize: "10px",
                             color: "#f5c842",
                             margin: 0,
                         }}
@@ -195,14 +195,14 @@ export default function GuildInteriorScene({
                     style={{
                         background: "rgba(26, 16, 8, 0.88)",
                         border: "2px solid #4ade80",
-                        padding: "6px 12px",
+                        padding: "8px 16px",
                         textAlign: "center",
                     }}
                 >
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#4ade80",
                             margin: 0,
                         }}
@@ -250,7 +250,7 @@ export default function GuildInteriorScene({
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    fontSize: "32px",
+                                    fontSize: "36px",
                                     flexShrink: 0,
                                 }}
                             >
@@ -260,7 +260,7 @@ export default function GuildInteriorScene({
                                 <p
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "10px",
+                                        fontSize: "14px",
                                         color: "#f5c842",
                                         margin: "0 0 8px",
                                     }}
@@ -270,7 +270,7 @@ export default function GuildInteriorScene({
                                 <p
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "6px",
+                                        fontSize: "10px",
                                         color: "#a88b6a",
                                         margin: 0,
                                         lineHeight: 2,
@@ -284,7 +284,7 @@ export default function GuildInteriorScene({
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "7px",
+                                fontSize: "11px",
                                 color: "#e8d5a3",
                                 lineHeight: 2.2,
                                 margin: "0 0 20px",
@@ -299,7 +299,7 @@ export default function GuildInteriorScene({
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "7px",
+                                fontSize: "11px",
                                 color: "#4ade80",
                                 lineHeight: 2.2,
                                 margin: "0 0 24px",
@@ -311,7 +311,7 @@ export default function GuildInteriorScene({
                         <button
                             className="pixel-btn"
                             onClick={() => setShowModal(false)}
-                            style={{ fontSize: "8px", padding: "10px 20px" }}
+                            style={{ fontSize: "12px", padding: "10px 20px" }}
                         >
                             Close
                         </button>

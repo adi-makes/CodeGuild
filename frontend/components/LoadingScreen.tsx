@@ -21,13 +21,13 @@ export default function LoadingScreen({ message = "Loading..." }: LoadingScreenP
                 }}
             >
                 {/* Animated pixel sprite — simple 8-bit spinner */}
-                <div style={{ fontSize: "48px", lineHeight: 1 }}>⚔️</div>
+                <div style={{ fontSize: "52px", lineHeight: 1 }}>⚔️</div>
 
                 {/* Loading text */}
                 <p
                     style={{
                         fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "14px",
+                        fontSize: "18px",
                         color: "#f5c842",
                         letterSpacing: "2px",
                         margin: 0,

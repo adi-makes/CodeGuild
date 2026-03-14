@@ -12,18 +12,21 @@ export default function HUD({ user }: HUDProps) {
     const currentRankMin = RANK_EXP[user.rank] || 0;
     const nextRankMin = user.rank < MAX_RANK ? RANK_EXP[user.rank + 1] : null;
 
-    const expInThisRank = user.totalExp - currentRankMin;
+    // Fix: If rank is high but totalExp is artificially low or out-of-sync, bump effective EXP visually
+    const effectiveTotalExp = Math.max(user.totalExp, currentRankMin);
+
+    const expInThisRank = effectiveTotalExp - currentRankMin;
     const expNeededForNext = nextRankMin ? nextRankMin - currentRankMin : 1;
     const progress =
         nextRankMin !== null
-            ? Math.min(100, Math.floor((expInThisRank / expNeededForNext) * 100))
+            ? Math.min(100, Math.max(0, Math.floor((expInThisRank / expNeededForNext) * 100)))
             : 100;
 
     return (
         <div
             style={{
                 position: "fixed",
-                top: "16px",
+                bottom: "16px",
                 right: "16px",
                 zIndex: 100,
                 background: "rgba(26, 16, 8, 0.95)",
@@ -61,7 +64,7 @@ export default function HUD({ user }: HUDProps) {
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#f5c842",
                             margin: 0,
                             lineHeight: 1.6,
@@ -78,7 +81,7 @@ export default function HUD({ user }: HUDProps) {
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#aaa",
                             margin: 0,
                             lineHeight: 1.6,
@@ -100,17 +103,17 @@ export default function HUD({ user }: HUDProps) {
                 <span
                     style={{
                         fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "7px",
+                        fontSize: "11px",
                         color: "#4ade80",
                     }}
                 >
-                    EXP: {user.totalExp}
+                    EXP: {effectiveTotalExp}
                 </span>
                 {nextRankMin !== null && (
                     <span
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#888",
                         }}
                     >
@@ -121,7 +124,7 @@ export default function HUD({ user }: HUDProps) {
                     <span
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#f5c842",
                         }}
                     >
@@ -152,13 +155,13 @@ export default function HUD({ user }: HUDProps) {
                 <p
                     style={{
                         fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "6px",
+                        fontSize: "10px",
                         color: "#888",
                         margin: "4px 0 0",
                         textAlign: "right",
                     }}
                 >
-                    {nextRankMin - user.totalExp} to {RANK_NAMES[user.rank + 1]}
+                    {nextRankMin - effectiveTotalExp} to {RANK_NAMES[user.rank + 1]}
                 </p>
             )}
         </div>

@@ -113,29 +113,20 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
             >
                 <div>
                     <button
+                        className="pixel-btn"
                         onClick={onGoBack}
                         style={{
-                            background: "transparent",
-                            border: "none",
-                            color: "#888",
-                            cursor: "pointer",
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "8px",
-                            padding: "0 0 10px 0",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            transition: "color 0.2s",
+                            fontSize: "10px",
+                            padding: "10px 16px",
+                            marginBottom: "16px",
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#4ade80")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}
                     >
                         ← Back to Guild Hall
                     </button>
                     <h1
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "18px",
+                            fontSize: "22px",
                             color: "#4ade80",
                             margin: 0,
                             textShadow: "3px 3px 0 #000",
@@ -143,7 +134,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                     >
                         🏆 Hall of Legends
                     </h1>
-                    <p style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "7px", color: "#aaa", margin: "6px 0 0" }}>
+                    <p style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "11px", color: "#aaa", margin: "6px 0 0" }}>
                         Top adventurers ranked by total EXP earned
                     </p>
                 </div>
@@ -158,8 +149,8 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                                 onClick={() => setFilterRank(tab.value)}
                                 style={{
                                     fontFamily: "var(--font-pixel), monospace",
-                                    fontSize: "6px",
-                                    padding: "8px 14px",
+                                    fontSize: "12px",
+                                    padding: "10px 16px",
                                     background: isActive ? "#4ade80" : "rgba(255,255,255,0.07)",
                                     color: isActive ? "#000" : "#ddd",
                                     border: isActive ? "2px solid #22c55e" : "2px solid #333",
@@ -184,7 +175,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                             marginBottom: "24px",
                             color: "#fca5a5",
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "8px",
+                            fontSize: "12px",
                         }}
                     >
                         ⚠ {error}
@@ -211,7 +202,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                         }}
                     >
                         {["#", "Adventurer", "Guild Rank", "EXP", "Quests"].map((h) => (
-                            <div key={h} style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "7px", color: "#4ade80", textTransform: "uppercase" }}>
+                            <div key={h} style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "11px", color: "#4ade80", textTransform: "uppercase" }}>
                                 {h}
                             </div>
                         ))}
@@ -224,7 +215,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                         </div>
                     ) : leaderboard.length === 0 ? (
                         <div style={{ padding: "60px 20px", textAlign: "center" }}>
-                            <p style={{ fontFamily: "var(--font-pixel)", color: "#555", fontSize: "8px" }}>No adventurers found for this rank.</p>
+                            <p style={{ fontFamily: "var(--font-pixel)", color: "#555", fontSize: "12px" }}>No adventurers found for this rank.</p>
                         </div>
                     ) : (
                         leaderboard.map((lbUser, index) => {
@@ -278,7 +269,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                                             <span
                                                 style={{
                                                     fontFamily: "var(--font-pixel), monospace",
-                                                    fontSize: "10px",
+                                                    fontSize: "14px",
                                                     color: isCurrentUser ? "#4ade80" : "#fff",
                                                 }}
                                             >
@@ -288,7 +279,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                                                 <span
                                                     style={{
                                                         fontFamily: "var(--font-pixel), monospace",
-                                                        fontSize: "6px",
+                                                        fontSize: "10px",
                                                         color: "#4ade80",
                                                         background: "rgba(74,222,128,0.2)",
                                                         padding: "2px 6px",
@@ -303,11 +294,11 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
 
                                     {/* Guild Rank */}
                                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                                        <span style={{ fontSize: "12px" }}>{RANK_BADGES[lbUser.rank] || "⚪"}</span>
+                                        <span style={{ fontSize: "16px" }}>{RANK_BADGES[lbUser.rank] || "⚪"}</span>
                                         <span
                                             style={{
                                                 fontFamily: "var(--font-pixel), monospace",
-                                                fontSize: "7px",
+                                                fontSize: "11px",
                                                 color: rankColor,
                                             }}
                                         >
@@ -319,7 +310,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                                     <div
                                         style={{
                                             fontFamily: "var(--font-pixel), monospace",
-                                            fontSize: "11px",
+                                            fontSize: "15px",
                                             color: "#4ade80",
                                         }}
                                     >
@@ -330,7 +321,7 @@ export default function LeaderboardScene({ user, onGoBack }: LeaderboardScenePro
                                     <div
                                         style={{
                                             fontFamily: "var(--font-pixel), monospace",
-                                            fontSize: "10px",
+                                            fontSize: "14px",
                                             color: "#f5c842",
                                         }}
                                     >

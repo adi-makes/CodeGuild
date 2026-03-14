@@ -50,7 +50,7 @@ export default function TownScene({ user, onEnterGuild, onLogout }: TownScenePro
                 <button
                     className="pixel-btn"
                     onClick={onLogout}
-                    style={{ fontSize: "6px", padding: "8px 12px", background: "#8b0000", borderColor: "#ff4d4d" }}
+                    style={{ fontSize: "10px", padding: "10px 16px", background: "#8b0000", borderColor: "#ff4d4d" }}
                 >
                     ← Logout
                 </button>
@@ -72,19 +72,25 @@ export default function TownScene({ user, onEnterGuild, onLogout }: TownScenePro
                 style={{
                     position: "absolute",
                     left: "50%",
-                    top: "30%",
-                    transform: "translate(-50%, -50%)",
+                    top: "16%",
+                    transform: "translateX(-50%)",
                     zIndex: 2,
-                    width: "clamp(200px, 30vw, 380px)",
-                    height: "auto",
+                    width: "clamp(200px, 32vw, 400px)",
+                    height: "clamp(180px, 28vh, 320px)",
                 }}
             >
                 <Image
                     src="/guild-hall.png"
                     alt="Guild Hall"
-                    width={380}
-                    height={380}
-                    style={{ imageRendering: "pixelated", width: "100%", height: "auto", display: "block" }}
+                    width={500}
+                    height={400}
+                    style={{
+                        imageRendering: "pixelated",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        display: "block",
+                    }}
                 />
             </div>
 
@@ -132,7 +138,7 @@ export default function TownScene({ user, onEnterGuild, onLogout }: TownScenePro
                     <span
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "8px",
+                            fontSize: "12px",
                             color: "#fbbf24",
                             animation: "bounce-arrow 1.2s ease-in-out infinite",
                             display: "block",
@@ -151,7 +157,7 @@ export default function TownScene({ user, onEnterGuild, onLogout }: TownScenePro
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "8px",
+                                fontSize: "12px",
                                 color: "#f5c842",
                                 margin: 0,
                                 letterSpacing: "1px",

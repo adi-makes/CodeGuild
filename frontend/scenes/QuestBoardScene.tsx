@@ -22,7 +22,7 @@ function StarRating({ count }: { count: number }) {
                     key={i}
                     style={{
                         color: i < count ? "#f5c842" : "#333",
-                        fontSize: "12px",
+                        fontSize: "16px",
                     }}
                 >
                     ★
@@ -100,7 +100,7 @@ export default function QuestBoardScene({
                     <button
                         className="pixel-btn"
                         onClick={onClose}
-                        style={{ fontSize: "6px", padding: "8px 12px" }}
+                        style={{ fontSize: "10px", padding: "10px 16px" }}
                     >
                         ← Back
                     </button>
@@ -108,7 +108,7 @@ export default function QuestBoardScene({
                         <h1
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "16px",
+                                fontSize: "20px",
                                 color: "#f5c842",
                                 margin: "0 0 6px",
                                 textShadow: "3px 3px 0 #3a1f0a",
@@ -119,7 +119,7 @@ export default function QuestBoardScene({
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "7px",
+                                fontSize: "11px",
                                 color: "#a88b6a",
                                 margin: 0,
                             }}
@@ -134,7 +134,7 @@ export default function QuestBoardScene({
                     <label
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#f5c842",
                         }}
                     >
@@ -145,7 +145,7 @@ export default function QuestBoardScene({
                         onChange={(e) => setRankFilter(Number(e.target.value))}
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "8px",
+                            fontSize: "12px",
                             background: "#1a1008",
                             color: "#f5c842",
                             border: "2px solid #f5c842",
@@ -171,7 +171,7 @@ export default function QuestBoardScene({
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "10px",
+                                fontSize: "14px",
                                 color: "#f5c842",
                             }}
                         >
@@ -185,7 +185,7 @@ export default function QuestBoardScene({
                         <p
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "9px",
+                                fontSize: "13px",
                                 color: "#c0392b",
                             }}
                         >
@@ -233,7 +233,7 @@ export default function QuestBoardScene({
                                                 position: "absolute",
                                                 top: "12px",
                                                 right: "12px",
-                                                fontSize: "20px",
+                                                fontSize: "24px",
                                             }}
                                         >
                                             🔒
@@ -244,7 +244,7 @@ export default function QuestBoardScene({
                                     <h2
                                         style={{
                                             fontFamily: "var(--font-pixel), monospace",
-                                            fontSize: "10px",
+                                            fontSize: "14px",
                                             color: locked ? "#888" : "#f5c842",
                                             margin: 0,
                                             lineHeight: 1.6,
@@ -258,7 +258,7 @@ export default function QuestBoardScene({
                                     <p
                                         style={{
                                             fontFamily: "var(--font-pixel), monospace",
-                                            fontSize: "6px",
+                                            fontSize: "10px",
                                             color: locked ? "#666" : "#c4a882",
                                             margin: 0,
                                             lineHeight: 2,
@@ -281,7 +281,7 @@ export default function QuestBoardScene({
                                         <span
                                             style={{
                                                 fontFamily: "var(--font-pixel), monospace",
-                                                fontSize: "6px",
+                                                fontSize: "10px",
                                                 color: locked ? "#666" : "#a88b6a",
                                             }}
                                         >
@@ -300,11 +300,11 @@ export default function QuestBoardScene({
                                             gap: "8px",
                                         }}
                                     >
-                                        <span style={{ fontSize: "12px" }}>⚡</span>
+                                        <span style={{ fontSize: "16px" }}>⚡</span>
                                         <span
                                             style={{
                                                 fontFamily: "var(--font-pixel), monospace",
-                                                fontSize: "7px",
+                                                fontSize: "11px",
                                                 color: locked ? "#555" : "#4ade80",
                                             }}
                                         >
@@ -317,7 +317,7 @@ export default function QuestBoardScene({
                                         <div
                                             style={{
                                                 fontFamily: "var(--font-pixel), monospace",
-                                                fontSize: "7px",
+                                                fontSize: "11px",
                                                 color: "#666",
                                                 textAlign: "center",
                                                 padding: "10px",
@@ -330,7 +330,7 @@ export default function QuestBoardScene({
                                         <button
                                             className="pixel-btn"
                                             onClick={() => onTakeQuest(quest)}
-                                            style={{ fontSize: "8px", padding: "10px 16px", width: "100%" }}
+                                            style={{ fontSize: "12px", padding: "10px 16px", width: "100%" }}
                                         >
                                             Take Quest →
                                         </button>

@@ -120,7 +120,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "48px",
+                        fontSize: "52px",
                         border: "3px solid #5c3317",
                         boxShadow: "4px 4px 0 #5c3317",
                     }}
@@ -133,7 +133,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                     <h1
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "22px",
+                            fontSize: "26px",
                             color: "#f5c842",
                             margin: "0 0 8px",
                             textShadow: "3px 3px 0 #5c3317",
@@ -145,7 +145,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#a88b6a",
                             margin: 0,
                             lineHeight: 2,
@@ -172,7 +172,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                     className="pixel-btn"
                     style={{
                         width: "100%",
-                        fontSize: "9px",
+                        fontSize: "13px",
                         padding: "16px 24px",
                         display: "flex",
                         alignItems: "center",
@@ -189,7 +189,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                         <>
                             <span
                                 style={{
-                                    fontSize: "18px",
+                                    fontSize: "22px",
                                     display: "inline-block",
                                     background: "white",
                                     borderRadius: "50%",
@@ -211,7 +211,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#c0392b",
                             margin: 0,
                             textAlign: "center",
@@ -225,7 +225,7 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
                 <p
                     style={{
                         fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "6px",
+                        fontSize: "10px",
                         color: "#555",
                         margin: 0,
                         textAlign: "center",

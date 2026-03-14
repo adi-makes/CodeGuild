@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { startSyncWatchers } = require('./syncWatchers');
 
 // --- Express App ---
 const app = express();
@@ -77,7 +78,12 @@ app.use((err, _req, res, _next) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`[backend-core] Running on http://localhost:${PORT}`);
-    if (!process.env.FIREBASE_PROJECT_ID) {
-        console.warn('[backend-core] ⚠ Firebase credentials not set — fill in .env before using API endpoints');
+
+    // Initialize DB watchers upon starting
+    try {
+        const { db } = getFirebase();
+        startSyncWatchers(db);
+    } catch (err) {
+        console.warn('[backend-core] ⚠ Firebase credentials not set or invalid — cannot start watchers.');
     }
 });

@@ -118,7 +118,7 @@ export default function SubmissionScene({
                 <button
                     className="pixel-btn"
                     onClick={onBackToQuestBoard}
-                    style={{ fontSize: "6px", padding: "8px 12px" }}
+                    style={{ fontSize: "10px", padding: "10px 16px" }}
                 >
                     ← Back
                 </button>
@@ -126,7 +126,7 @@ export default function SubmissionScene({
                     <h1
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "12px",
+                            fontSize: "16px",
                             color: "#f5c842",
                             margin: "0 0 4px",
                             textShadow: "2px 2px 0 #3a1f0a",
@@ -137,7 +137,7 @@ export default function SubmissionScene({
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#a88b6a",
                             margin: 0,
                         }}
@@ -160,7 +160,7 @@ export default function SubmissionScene({
                     <h2
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "9px",
+                            fontSize: "13px",
                             color: "#f5c842",
                             margin: "0 0 12px",
                         }}
@@ -170,7 +170,7 @@ export default function SubmissionScene({
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#c4a882",
                             lineHeight: 2.2,
                             margin: 0,
@@ -186,7 +186,7 @@ export default function SubmissionScene({
                         style={{
                             display: "block",
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "8px",
+                            fontSize: "12px",
                             color: "#f5c842",
                             marginBottom: "8px",
                         }}
@@ -206,7 +206,7 @@ export default function SubmissionScene({
                             borderColor: code ? "#f5c842" : "#333",
                             color: "#e8e8e8",
                             fontFamily: "'Courier New', Courier, monospace",
-                            fontSize: "13px",
+                            fontSize: "17px",
                             lineHeight: 1.6,
                             padding: "16px",
                             resize: "vertical",
@@ -223,7 +223,7 @@ export default function SubmissionScene({
                         className="pixel-btn"
                         onClick={handleSubmit}
                         disabled={submitting || !code.trim()}
-                        style={{ fontSize: "9px", padding: "14px 28px" }}
+                        style={{ fontSize: "13px", padding: "14px 28px" }}
                     >
                         {submitting ? "Evaluating your code..." : "Submit for Evaluation ⚔"}
                     </button>
@@ -245,7 +245,7 @@ export default function SubmissionScene({
                         <span
                             style={{
                                 fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "8px",
+                                fontSize: "12px",
                                 color: "#a88b6a",
                             }}
                         >
@@ -259,7 +259,7 @@ export default function SubmissionScene({
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
+                            fontSize: "11px",
                             color: "#c0392b",
                             marginTop: "16px",
                             lineHeight: 2,
@@ -307,7 +307,7 @@ export default function SubmissionScene({
                                 <span
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "32px",
+                                        fontSize: "36px",
                                         color: scoreColor,
                                         lineHeight: 1,
                                     }}
@@ -317,7 +317,7 @@ export default function SubmissionScene({
                                 <span
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "7px",
+                                        fontSize: "11px",
                                         color: "#888",
                                         marginTop: "4px",
                                     }}
@@ -330,7 +330,7 @@ export default function SubmissionScene({
                                 <p
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "12px",
+                                        fontSize: "16px",
                                         color: result.accepted ? "#4ade80" : "#c0392b",
                                         margin: "0 0 8px",
                                     }}
@@ -340,7 +340,7 @@ export default function SubmissionScene({
                                 <p
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "8px",
+                                        fontSize: "12px",
                                         color: result.accepted ? "#4ade80" : "#888",
                                         margin: "0 0 4px",
                                     }}
@@ -353,7 +353,7 @@ export default function SubmissionScene({
                                     <p
                                         style={{
                                             fontFamily: "var(--font-pixel), monospace",
-                                            fontSize: "9px",
+                                            fontSize: "13px",
                                             color: "#f5c842",
                                             margin: "8px 0 0",
                                         }}
@@ -379,7 +379,7 @@ export default function SubmissionScene({
                             <h3
                                 style={{
                                     fontFamily: "var(--font-pixel), monospace",
-                                    fontSize: "8px",
+                                    fontSize: "12px",
                                     color: "#f5c842",
                                     margin: "0 0 10px",
                                 }}
@@ -389,7 +389,7 @@ export default function SubmissionScene({
                             <p
                                 style={{
                                     fontFamily: "var(--font-pixel), monospace",
-                                    fontSize: "7px",
+                                    fontSize: "11px",
                                     color: "#c4a882",
                                     lineHeight: 2.2,
                                     margin: 0,
@@ -408,7 +408,7 @@ export default function SubmissionScene({
                                 <h3
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "8px",
+                                        fontSize: "12px",
                                         color: "#eab308",
                                         margin: "0 0 10px",
                                     }}
@@ -421,7 +421,7 @@ export default function SubmissionScene({
                                             key={i}
                                             style={{
                                                 fontFamily: "var(--font-pixel), monospace",
-                                                fontSize: "6px",
+                                                fontSize: "10px",
                                                 color: "#eab308",
                                                 lineHeight: 2.5,
                                                 marginBottom: "4px",
@@ -438,7 +438,7 @@ export default function SubmissionScene({
                         <button
                             className="pixel-btn"
                             onClick={onBackToQuestBoard}
-                            style={{ fontSize: "8px", padding: "12px 24px" }}
+                            style={{ fontSize: "12px", padding: "12px 24px" }}
                         >
                             ← Return to Quest Board
                         </button>
