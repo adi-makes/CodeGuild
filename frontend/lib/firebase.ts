@@ -7,6 +7,11 @@ const firebaseConfig = {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
 };
 
+console.log("Firebase Config:", {
+    ...firebaseConfig,
+    apiKey: firebaseConfig.apiKey ? "PRESENT" : "MISSING" // don't log the actual key
+});
+
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();

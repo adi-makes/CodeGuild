@@ -20,35 +20,20 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
     const handleGoogleSignIn = async () => {
         setLoading(true);
         setError(null);
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const idToken = await result.user.getIdToken();
 
-            // Initialize user in backend
-            const res = await fetch(`${BACKEND_CORE_URL}/api/users/init`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${idToken}`,
-                },
-            });
-
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error || "Failed to initialize account");
-            }
-
-            const userData: UserData = await res.json();
-            onLogin(userData);
-        } catch (err: unknown) {
-            console.error("Login error:", err);
-            if (err instanceof Error) {
-                setError(err.message || "Sign-in failed. Please try again.");
-            } else {
-                setError("Sign-in failed. Please try again.");
-            }
-            setLoading(false);
-        }
+        // TEMPORARY BYPASS FOR TESTING
+        console.log("Bypassing auth...");
+        setTimeout(() => {
+            const dummyUser: UserData = {
+                userId: "dummy-123",
+                email: "test@example.com",
+                displayName: "Test Adventurer",
+                rank: 1,
+                totalExp: 100,
+                completedQuests: []
+            };
+            onLogin(dummyUser);
+        }, 500); // Small delay for visual feedback
     };
 
     return (
