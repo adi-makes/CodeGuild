@@ -1,13 +1,10 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-<<<<<<< HEAD
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { Quest, Scene, UserData } from "@/lib/types";
-=======
 import { Quest, Scene, UserData, Room } from "@/lib/types";
->>>>>>> 4584dfc (1V1,AND LEAderboard done)
+
 import LoadingScreen from "@/components/LoadingScreen";
 import LoginScene from "@/scenes/LoginScene";
 import TownScene from "@/scenes/TownScene";

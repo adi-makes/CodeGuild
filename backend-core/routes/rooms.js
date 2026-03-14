@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const quests = require('../data/quests.json');
+const axios = require('axios');
 
 router.post('/create', async (req, res) => {
     try {
@@ -81,8 +82,6 @@ router.get('/status/:roomId', async (req, res) => {
     }
 });
 
-const axios = require('axios');
-const quests = require('../data/quests.json');
 const { calculateExpEarned } = require('../config/scoring');
 const { getRankForExp } = require('../config/ranks');
 

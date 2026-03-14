@@ -1,0 +1,21 @@
+
+> codeguild-backend-core@1.0.0 start
+> node index.js
+
+/home/rahilralu/Desktop/VS Code/HackQuest/Hack_Europa/CodeGuild/backend-core/routes/rooms.js:85
+const quests = require('../data/quests.json');
+      ^
+
+SyntaxError: Identifier 'quests' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1638:18)
+    at Module._compile (node:internal/modules/cjs/loader:1680:20)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Module._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+    at require (node:internal/modules/helpers:147:16)
+    at Object.<anonymous> (/home/rahilralu/Desktop/VS Code/HackQuest/Hack_Europa/CodeGuild/backend-core/index.js:64:20)
+
+Node.js v22.22.0
