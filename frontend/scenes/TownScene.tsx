@@ -51,7 +51,7 @@ export default function TownScene({ user, onEnterGuild }: TownSceneProps) {
                     top: "30%",
                     transform: "translate(-50%, -50%)",
                     zIndex: 2,
-                    /* The building image itself */
+                    /* The building image itself: THIS IS WHAT YOU ADJUST */
                     width: "clamp(200px, 30vw, 380px)",
                     height: "auto",
                 }}

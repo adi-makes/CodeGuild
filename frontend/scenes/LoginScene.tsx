@@ -21,19 +21,44 @@ export default function LoginScene({ onLogin }: LoginSceneProps) {
         setLoading(true);
         setError(null);
 
-        // TEMPORARY BYPASS FOR TESTING
-        console.log("Bypassing auth...");
-        setTimeout(() => {
-            const dummyUser: UserData = {
-                userId: "dummy-123",
-                email: "test@example.com",
-                displayName: "Test Adventurer",
-                rank: 1,
-                totalExp: 100,
-                completedQuests: []
-            };
-            onLogin(dummyUser);
-        }, 500); // Small delay for visual feedback
+        try {
+            console.log("1. Starting signInWithPopup");
+            const result = await signInWithPopup(auth, googleProvider);
+            console.log("2. signInWithPopup success, user:", result.user.email);
+
+            console.log("3. Getting ID token");
+            const idToken = await result.user.getIdToken();
+            console.log("4. ID token retrieved");
+
+            // Initialize user in backend
+            console.log("5. Calling backend-core at", `${BACKEND_CORE_URL}/api/users/init`);
+            const res = await fetch(`${BACKEND_CORE_URL}/api/users/init`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+            });
+            console.log("6. Backend response received, status:", res.status);
+
+            if (!res.ok) {
+                const errData = await res.json();
+                console.error("Backend error response:", errData);
+                throw new Error(errData.error || "Failed to initialize account");
+            }
+
+            const userData: UserData = await res.json();
+            console.log("7. User data parsed successfully:", userData);
+            onLogin(userData);
+        } catch (err: unknown) {
+            console.error("8. Login error caught:", err);
+            if (err instanceof Error) {
+                setError(err.message || "Sign-in failed. Please try again.");
+            } else {
+                setError("Sign-in failed. Please try again.");
+            }
+            setLoading(false);
+        }
     };
 
     return (
