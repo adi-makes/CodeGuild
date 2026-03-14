@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+<<<<<<< HEAD
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Quest, Scene, UserData } from "@/lib/types";
+=======
+import { Quest, Scene, UserData, Room } from "@/lib/types";
+>>>>>>> 4584dfc (1V1,AND LEAderboard done)
 import LoadingScreen from "@/components/LoadingScreen";
 import LoginScene from "@/scenes/LoginScene";
 import TownScene from "@/scenes/TownScene";
@@ -11,6 +15,7 @@ import GuildInteriorScene from "@/scenes/GuildInteriorScene";
 import QuestBoardScene from "@/scenes/QuestBoardScene";
 import SubmissionScene from "@/scenes/SubmissionScene";
 import LeaderboardScene from "@/scenes/LeaderboardScene";
+import OneVOneScene from "@/scenes/OneVOneScene";
 
 const LOADING_DURATION_MS = 1500;
 const BACKEND_CORE_URL =
@@ -22,6 +27,15 @@ export default function Home() {
   const [loadingMessage, setLoadingMessage] = useState("Checking guild records...");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
+  const [activeRoom, setActiveRoom] = useState<Room | null>(null);
+  const [allQuests, setAllQuests] = useState<Quest[]>([]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_CORE_URL || "http://localhost:3001"}/api/quests`)
+      .then(res => res.json())
+      .then(data => setAllQuests(data))
+      .catch(err => console.error("Failed to pre-fetch quests", err));
+  }, []);
 
   // Check Firebase Auth state on mount
   useEffect(() => {
@@ -97,8 +111,20 @@ export default function Home() {
 
   const handleBackToQuestBoard = useCallback(() => {
     setSelectedQuest(null);
+    setActiveRoom(null);
     navigateTo("quest-board", "Returning to quest board...");
   }, [navigateTo]);
+
+  const handleStartOneVOne = useCallback((room: Room) => {
+    const quest = allQuests.find(q => q.id === room.questId);
+    setActiveRoom(room);
+    if (quest) {
+      setSelectedQuest(quest);
+      navigateTo("submission", "Battle starting! Prepare your code...");
+    } else {
+      navigateTo("quest-board", "Error loading quest...");
+    }
+  }, [allQuests, navigateTo]);
 
   const handleUpdateUser = useCallback((updated: UserData) => {
     setUserData(updated);
@@ -153,17 +179,29 @@ export default function Home() {
         <QuestBoardScene
           user={userData}
           onTakeQuest={handleTakeQuest}
+          onGoToOneVOne={() => navigateTo("one-v-one", "Entering 1v1 lobby...")}
           onClose={() => navigateTo("guild-interior", "Returning to guild hall...")}
+        />
+      );
+
+    case "one-v-one":
+      if (!userData) return <LoginScene onLogin={handleLogin} />;
+      return (
+        <OneVOneScene
+          user={userData}
+          onStartGame={handleStartOneVOne}
+          onCancel={() => navigateTo("quest-board", "Returning to quest board...")}
         />
       );
 
     case "submission":
       if (!userData || !selectedQuest)
-        return <QuestBoardScene user={userData!} onTakeQuest={handleTakeQuest} onClose={() => navigateTo("guild-interior", "Returning...")} />;
+        return <QuestBoardScene user={userData!} onTakeQuest={handleTakeQuest} onGoToOneVOne={() => navigateTo("one-v-one", "Entering lobby...")} onClose={() => navigateTo("guild-interior", "Returning...")} />;
       return (
         <SubmissionScene
           user={userData}
           quest={selectedQuest}
+          room={activeRoom}
           onUpdateUser={handleUpdateUser}
           onBackToQuestBoard={handleBackToQuestBoard}
         />

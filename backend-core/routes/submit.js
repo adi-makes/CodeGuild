@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         const decoded = await verifyToken(req, res);
         if (!decoded) return;
 
-        const { userId, questId, code } = req.body;
+        const { userId, questId, code, isDaily } = req.body;
         if (!userId || !questId || !code) {
             return res.status(400).json({ error: 'userId, questId, and code are required' });
         }
@@ -44,6 +44,17 @@ router.post('/', async (req, res) => {
         const quest = quests.find(q => q.id === questId);
         if (!quest) {
             return res.status(404).json({ error: 'Quest not found' });
+        }
+
+        let rewardMultiplier = 1;
+        if (isDaily) {
+            const today = new Date().toISOString().split('T')[0];
+            const seed = today.split('-').reduce((sum, val) => sum + parseInt(val, 10), 0);
+            const dailyIndex = seed % quests.length;
+            if (quests[dailyIndex].id === questId) {
+                rewardMultiplier = 3;
+                console.log(`[submit] Daily Quest bonus (3x) for user ${userId}`);
+            }
         }
 
         const userRef = db.collection('users').doc(userId);
@@ -73,7 +84,7 @@ router.post('/', async (req, res) => {
         }
 
         const { score, feedback, flags } = evalResult;
-        const { expEarned, accepted } = calculateExpEarned(score, quest.expReward);
+        const { expEarned, accepted } = calculateExpEarned(score, quest.expReward * rewardMultiplier);
 
         // --- Duplicate-completion check ---
         const existingQuests = userData.completedQuests || [];

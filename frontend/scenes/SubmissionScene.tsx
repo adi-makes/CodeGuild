@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
-import { Quest, UserData, EvalResult, RANK_NAMES } from "@/lib/types";
+import { Quest, UserData, EvalResult, RANK_NAMES, Room } from "@/lib/types";
 import HUD from "@/components/HUD";
 
 const BACKEND_CORE_URL =
@@ -11,6 +11,7 @@ const BACKEND_CORE_URL =
 interface SubmissionSceneProps {
     user: UserData;
     quest: Quest;
+    room?: Room | null;
     onUpdateUser: (updated: UserData) => void;
     onBackToQuestBoard: () => void;
 }
@@ -18,9 +19,14 @@ interface SubmissionSceneProps {
 export default function SubmissionScene({
     user,
     quest,
+    room,
     onUpdateUser,
     onBackToQuestBoard,
 }: SubmissionSceneProps) {
+    const [currentRoom, setCurrentRoom] = useState<Room | null>(room || null);
+    const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
+    const [battleSummary, setBattleSummary] = useState<Room | null>(null);
+
     const [code, setCode] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState<EvalResult | null>(null);
@@ -28,6 +34,32 @@ export default function SubmissionScene({
 
     // Updated user state for HUD real-time updates after submission
     const [currentUser, setCurrentUser] = useState<UserData>(user);
+
+    // Poll for battle end if we finished but opponent hasn't
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isWaitingForOpponent && currentRoom) {
+            interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${BACKEND_CORE_URL}/api/rooms/status/${currentRoom.id}`);
+                    if (res.ok) {
+                        const updated: Room = await res.json();
+                        setCurrentRoom(updated);
+                        if (updated.status === "finished") {
+                            setBattleSummary(updated);
+                            setIsWaitingForOpponent(false);
+                        } else if (updated.status === "cancelled") {
+                            setIsWaitingForOpponent(false);
+                            onBackToQuestBoard();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Poll error", err);
+                }
+            }, 3000);
+        }
+        return () => clearInterval(interval);
+    }, [isWaitingForOpponent, currentRoom, onBackToQuestBoard]);
 
     const handleSubmit = async () => {
         if (!code.trim()) {
@@ -39,45 +71,77 @@ export default function SubmissionScene({
         setResult(null);
 
         try {
-            const firebaseUser = auth.currentUser;
-            if (!firebaseUser) throw new Error("Not logged in");
+            // If in a room, use specialized battle submission endpoint
+            if (currentRoom) {
+                const res = await fetch(`${BACKEND_CORE_URL}/api/rooms/submit-code`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        roomId: currentRoom.id,
+                        userId: user.userId,
+                        code: code
+                    })
+                });
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || "Failed to sync code.");
+                }
+                setIsWaitingForOpponent(true);
+            } else {
+                // NORMAL SINGLE PLAYER FLOW
+                const firebaseUser = auth.currentUser;
+                if (!firebaseUser) throw new Error("Not logged in");
+                const idToken = await firebaseUser.getIdToken();
 
-            const idToken = await firebaseUser.getIdToken();
+                const res = await fetch(`${BACKEND_CORE_URL}/api/submit`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({
+                        userId: user.userId,
+                        questId: quest.id,
+                        code,
+                        isDaily: quest.isDaily,
+                    }),
+                });
 
-            const res = await fetch(`${BACKEND_CORE_URL}/api/submit`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${idToken}`,
-                },
-                body: JSON.stringify({
-                    userId: user.userId,
-                    questId: quest.id,
-                    code,
-                }),
-            });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Submission failed");
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Submission failed");
+                const evalResult: EvalResult = data;
+                setResult(evalResult);
 
-            const evalResult: EvalResult = data;
-            setResult(evalResult);
-
-            // Update user state in real-time
-            const updatedUser: UserData = {
-                ...currentUser,
-                totalExp: evalResult.newTotalExp,
-                rank: evalResult.newRank,
-            };
-            setCurrentUser(updatedUser);
-            onUpdateUser(updatedUser);
-        } catch (err) {
+                // Update user state for HUD
+                const updatedUser: UserData = {
+                    ...currentUser,
+                    totalExp: evalResult.newTotalExp,
+                    rank: evalResult.newRank,
+                };
+                setCurrentUser(updatedUser);
+                onUpdateUser(updatedUser);
+            }
+        } catch (err: any) {
             console.error("Submit error:", err);
-            setSubmitError(
-                err instanceof Error ? err.message : "Submission failed. Try again."
-            );
+            setSubmitError(err.message || "Submission failed. Try again.");
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleQuitBattle = async () => {
+        if (!currentRoom) return;
+        try {
+            await fetch(`${BACKEND_CORE_URL}/api/rooms/quit-battle`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomId: currentRoom.id, userId: user.userId })
+            });
+            onBackToQuestBoard();
+        } catch (err) {
+            console.error("Quit error", err);
+            onBackToQuestBoard();
         }
     };
 
@@ -112,67 +176,92 @@ export default function SubmissionScene({
                     padding: "20px 40px",
                     display: "flex",
                     alignItems: "center",
-                    gap: "16px",
+                    justifyContent: "space-between",
                 }}
             >
-                <button
-                    className="pixel-btn"
-                    onClick={onBackToQuestBoard}
-                    style={{ fontSize: "10px", padding: "10px 16px" }}
-                >
-                    ← Back
-                </button>
-                <div>
-                    <h1
-                        style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "16px",
-                            color: "#f5c842",
-                            margin: "0 0 4px",
-                            textShadow: "2px 2px 0 #3a1f0a",
-                        }}
+                <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+                    <button
+                        className="pixel-btn"
+                        onClick={onBackToQuestBoard}
+                        style={{ fontSize: "10px", padding: "10px 16px" }}
                     >
-                        {quest.title}
-                    </h1>
-                    <p
-                        style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "11px",
-                            color: "#a88b6a",
-                            margin: 0,
-                        }}
-                    >
-                        ⚡ {quest.expReward} EXP &nbsp;•&nbsp; Rank {quest.requiredRank} Quest
-                    </p>
+                        ← BACK
+                    </button>
+                    <div>
+                        <h1
+                            style={{
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "18px",
+                                color: "#f5c842",
+                                margin: "0 0 4px",
+                            }}
+                        >
+                            {quest.requiredRank}.Quest 2: {quest.title}
+                        </h1>
+                        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                            <span
+                                style={{
+                                    fontFamily: "var(--font-pixel), monospace",
+                                    fontSize: "11px",
+                                    color: "#a88b6a",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                }}
+                            >
+                                ⚡ {quest.expReward} EXP
+                            </span>
+                            <span style={{ color: "#555" }}>•</span>
+                            <span
+                                style={{
+                                    fontFamily: "var(--font-pixel), monospace",
+                                    fontSize: "11px",
+                                    color: "#a88b6a",
+                                }}
+                            >
+                                Rank {quest.requiredRank} Quest
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div style={{ padding: "32px 40px", maxWidth: "900px", margin: "0 auto" }}>
-                {/* Quest description */}
+            <div style={{ maxWidth: "900px", margin: "40px auto", padding: "0 20px" }}>
+                {/* Description card */}
                 <div
                     style={{
-                        background: "rgba(92, 51, 23, 0.25)",
-                        border: "2px solid #5c3317",
-                        padding: "20px 24px",
-                        marginBottom: "24px",
+                        background: "rgba(26, 16, 8, 0.6)",
+                        border: "1px solid #5c3317",
+                        padding: "30px",
+                        marginBottom: "30px",
                     }}
                 >
-                    <h2
+                    <div
                         style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "13px",
-                            color: "#f5c842",
-                            margin: "0 0 12px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            marginBottom: "16px",
                         }}
                     >
-                        📜 Quest Description
-                    </h2>
+                        <span style={{ fontSize: "20px" }}>📜</span>
+                        <h2
+                            style={{
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "16px",
+                                color: "#f5c842",
+                                margin: 0,
+                            }}
+                        >
+                            Quest Description
+                        </h2>
+                    </div>
                     <p
                         style={{
                             fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "11px",
+                            fontSize: "13px",
                             color: "#c4a882",
-                            lineHeight: 2.2,
+                            lineHeight: 1.8,
                             margin: 0,
                         }}
                     >
@@ -180,134 +269,105 @@ export default function SubmissionScene({
                     </p>
                 </div>
 
-                {/* Code editor */}
-                <div style={{ marginBottom: "20px" }}>
-                    <label
-                        style={{
-                            display: "block",
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "12px",
-                            color: "#f5c842",
-                            marginBottom: "8px",
-                        }}
-                    >
-                        💻 Your Solution:
-                    </label>
-                    <textarea
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        disabled={submitting || result !== null}
-                        placeholder="// Paste your code solution here..."
-                        style={{
-                            width: "100%",
-                            minHeight: "280px",
-                            background: "#0d0d0d",
-                            border: "3px solid #333",
-                            borderColor: code ? "#f5c842" : "#333",
-                            color: "#e8e8e8",
-                            fontFamily: "'Courier New', Courier, monospace",
-                            fontSize: "17px",
-                            lineHeight: 1.6,
-                            padding: "16px",
-                            resize: "vertical",
-                            outline: "none",
-                            boxSizing: "border-box",
-                            transition: "border-color 0.2s",
-                        }}
-                    />
-                </div>
-
-                {/* Submit button */}
-                {result === null && (
-                    <button
-                        className="pixel-btn"
-                        onClick={handleSubmit}
-                        disabled={submitting || !code.trim()}
-                        style={{ fontSize: "13px", padding: "14px 28px" }}
-                    >
-                        {submitting ? "Evaluating your code..." : "Submit for Evaluation ⚔"}
-                    </button>
-                )}
-
-                {/* Submitting loading state */}
-                {submitting && (
-                    <div
-                        style={{
-                            marginTop: "24px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "16px",
-                        }}
-                    >
-                        <div className="loading-dot" />
-                        <div className="loading-dot" />
-                        <div className="loading-dot" />
-                        <span
-                            style={{
-                                fontFamily: "var(--font-pixel), monospace",
-                                fontSize: "12px",
-                                color: "#a88b6a",
-                            }}
-                        >
-                            The guild scholar is reviewing your code...
-                        </span>
-                    </div>
-                )}
-
-                {/* Submit error */}
-                {submitError && (
-                    <p
-                        style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "11px",
-                            color: "#c0392b",
-                            marginTop: "16px",
-                            lineHeight: 2,
-                        }}
-                    >
-                        ⚠ {submitError}
-                    </p>
-                )}
-
-                {/* === Result Panel === */}
-                {result !== null && (
-                    <div
-                        style={{
-                            marginTop: "32px",
-                            background: "rgba(26, 16, 8, 0.97)",
-                            border: `4px solid ${result.accepted ? "#4ade80" : "#c0392b"}`,
-                            boxShadow: `8px 8px 0 ${result.accepted ? "#166534" : "#7f1d1d"}`,
-                            padding: "32px",
-                        }}
-                    >
-                        {/* Score header */}
+                {/* Main area: Editor or Results */}
+                {!result ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                         <div
                             style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "24px",
-                                marginBottom: "24px",
-                                flexWrap: "wrap",
+                                gap: "10px",
+                                color: "#a88b6a",
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "12px",
                             }}
                         >
-                            {/* Score badge */}
-                            <div
+                            <span style={{ fontSize: "16px" }}>💻</span>
+                            Your Solution:
+                        </div>
+
+                        <textarea
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            placeholder="// Paste your code here..."
+                            style={{
+                                width: "100%",
+                                height: "300px",
+                                background: "#000",
+                                border: "4px solid #f5c842",
+                                color: "#4ade80",
+                                fontFamily: "monospace",
+                                fontSize: "14px",
+                                padding: "20px",
+                                outline: "none",
+                                resize: "none",
+                            }}
+                        />
+
+                        {submitError && (
+                            <p
                                 style={{
-                                    width: "100px",
-                                    height: "100px",
-                                    border: `4px solid ${scoreColor}`,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                    background: "rgba(0,0,0,0.5)",
+                                    fontFamily: "var(--font-pixel), monospace",
+                                    fontSize: "12px",
+                                    color: "#c0392b",
+                                    margin: 0,
                                 }}
                             >
+                                ⚠ {submitError}
+                            </p>
+                        )}
+
+                        <button
+                            className="pixel-btn"
+                            disabled={submitting}
+                            onClick={handleSubmit}
+                            style={{
+                                fontSize: "14px",
+                                padding: "16px 32px",
+                                width: "fit-content",
+                                opacity: submitting ? 0.7 : 1,
+                            }}
+                        >
+                            {submitting ? "EVALUATING..." : "SUBMIT FOR EVALUATION ⚔"}
+                        </button>
+
+                        {user.rank < quest.requiredRank && (
+                            <p
+                                style={{
+                                    fontFamily: "var(--font-pixel), monospace",
+                                    fontSize: "11px",
+                                    color: "#c0392b",
+                                    margin: 0,
+                                }}
+                            >
+                                ⚠ This quest requires Rank {quest.requiredRank}. You are Rank{" "}
+                                {user.rank}.
+                            </p>
+                        )}
+                    </div>
+                ) : (
+                    /* Evaluation results view */
+                    <div
+                        style={{
+                            background: "rgba(26, 16, 8, 0.9)",
+                            border: "4px solid #f5c842",
+                            padding: "40px",
+                            boxShadow: "10px 10px 0 #3a1f0a",
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                justifyContent: "space-between",
+                                marginBottom: "30px",
+                            }}
+                        >
+                            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                                 <span
                                     style={{
                                         fontFamily: "var(--font-pixel), monospace",
-                                        fontSize: "36px",
+                                        fontSize: "48px",
                                         color: scoreColor,
                                         lineHeight: 1,
                                     }}
@@ -435,16 +495,91 @@ export default function SubmissionScene({
                         )}
 
                         {/* Return button */}
-                        <button
-                            className="pixel-btn"
-                            onClick={onBackToQuestBoard}
-                            style={{ fontSize: "12px", padding: "12px 24px" }}
-                        >
-                            ← Return to Quest Board
-                        </button>
+                        <div style={{ display: "flex", gap: "15px" }}>
+                            <button
+                                className="pixel-btn"
+                                onClick={onBackToQuestBoard}
+                                style={{ fontSize: "12px", padding: "12px 24px" }}
+                            >
+                                ← Return to Quest Board
+                            </button>
+                            {!room && (
+                                <button
+                                    className="pixel-btn"
+                                    onClick={() => setResult(null)}
+                                    style={{ fontSize: "12px", padding: "12px 24px", background: "#3a1f0a" }}
+                                >
+                                    Try Again
+                                </button>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
+
+            {/* Battle Waiting Overlay */}
+            {isWaitingForOpponent && !battleSummary && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 100, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                    <div className="spinner" style={{ width: "40px", height: "40px", border: "4px solid rgba(245,200,66,0.1)", borderTopColor: "#f5c842", borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: "20px" }} />
+                    <p style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "16px", color: "#f5c842", marginBottom: "30px" }}>Waiting for opponent to finish...</p>
+                    <button
+                        className="pixel-btn"
+                        onClick={handleQuitBattle}
+                        style={{ background: "#8b0000", borderColor: "#ff4d4d", fontSize: "12px" }}
+                    >
+                        Quit Battle
+                    </button>
+                </div>
+            )}
+
+            {/* Battle Summary Overlay */}
+            {battleSummary && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(10,10,10,0.98)", zIndex: 200, overflowY: "auto", padding: "40px 20px" }}>
+                    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+                        <h1 style={{ textAlign: "center", color: "#f5c842", fontSize: "32px", marginBottom: "40px", textShadow: "4px 4px 0 #000" }}>
+                            {battleSummary.winnerId === user.userId ? "🏆 VICTORY!" : battleSummary.winnerId ? "💀 DEFEAT" : "⚖ DRAW"}
+                        </h1>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+                            {/* Creator Side */}
+                            <div style={{ background: "rgba(26,16,8,0.8)", border: "3px solid #f5c842", padding: "20px" }}>
+                                <h2 style={{ color: "#f5c842", fontSize: "18px", marginBottom: "10px" }}>
+                                    {battleSummary.creatorId === user.userId ? "YOU (Creator)" : "OPPONENT (Creator)"}
+                                </h2>
+                                <div style={{ background: "#000", padding: "15px", height: "300px", overflow: "auto", border: "1px solid #333", marginBottom: "15px" }}>
+                                    <pre style={{ color: "#4ade80", fontSize: "12px", margin: 0 }}>{battleSummary.creatorCode}</pre>
+                                </div>
+                                <p style={{ color: "#888" }}>Score: <span style={{ color: "#fff" }}>{battleSummary.creatorResult?.score}</span></p>
+                                <p style={{ color: "#888" }}>EXP: <span style={{ color: "#4ade80" }}>+{battleSummary.creatorResult?.expEarned}</span></p>
+                                <div style={{ background: "rgba(0,0,0,0.3)", padding: "10px", marginTop: "10px", border: "1px solid #5c3317" }}>
+                                    <p style={{ color: "#f5c842", fontSize: "11px", margin: "0 0 5px" }}>Review:</p>
+                                    <p style={{ color: "#c4a882", fontSize: "10px", margin: 0, lineHeight: 1.5 }}>{battleSummary.creatorResult?.feedback}</p>
+                                </div>
+                            </div>
+
+                            {/* Joiner Side */}
+                            <div style={{ background: "rgba(26,16,8,0.8)", border: "3px solid #f5c842", padding: "20px" }}>
+                                <h2 style={{ color: "#f5c842", fontSize: "18px", marginBottom: "10px" }}>
+                                    {battleSummary.joinerId === user.userId ? "YOU (Joiner)" : "OPPONENT (Joiner)"}
+                                </h2>
+                                <div style={{ background: "#000", padding: "15px", height: "300px", overflow: "auto", border: "1px solid #333", marginBottom: "15px" }}>
+                                    <pre style={{ color: "#4ade80", fontSize: "12px", margin: 0 }}>{battleSummary.joinerCode}</pre>
+                                </div>
+                                <p style={{ color: "#888" }}>Score: <span style={{ color: "#fff" }}>{battleSummary.joinerResult?.score}</span></p>
+                                <p style={{ color: "#888" }}>EXP: <span style={{ color: "#4ade80" }}>+{battleSummary.joinerResult?.expEarned}</span></p>
+                                <div style={{ background: "rgba(0,0,0,0.3)", padding: "10px", marginTop: "10px", border: "1px solid #5c3317" }}>
+                                    <p style={{ color: "#f5c842", fontSize: "11px", margin: "0 0 5px" }}>Review:</p>
+                                    <p style={{ color: "#c4a882", fontSize: "10px", margin: 0, lineHeight: 1.5 }}>{battleSummary.joinerResult?.feedback}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ textAlign: "center", marginTop: "40px" }}>
+                            <button className="pixel-btn" onClick={onBackToQuestBoard}>Return to Town</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <HUD user={currentUser} />
         </div>

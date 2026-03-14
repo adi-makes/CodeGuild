@@ -61,10 +61,12 @@ app.use((req, _res, next) => {
 const userRoutes = require('./routes/users');
 const questRoutes = require('./routes/quests');
 const submitRoutes = require('./routes/submit');
+const roomRoutes = require('./routes/rooms');
 
 app.use('/api/users', userRoutes);
 app.use('/api/quests', questRoutes);
 app.use('/api/submit', submitRoutes);
+app.use('/api/rooms', roomRoutes);
 
 // --- Health check ---
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'backend-core' }));

@@ -11,6 +11,7 @@ const BACKEND_CORE_URL =
 interface QuestBoardSceneProps {
     user: UserData;
     onTakeQuest: (quest: Quest) => void;
+    onGoToOneVOne: () => void;
     onClose: () => void;
 }
 
@@ -35,11 +36,13 @@ function StarRating({ count }: { count: number }) {
 export default function QuestBoardScene({
     user,
     onTakeQuest,
+    onGoToOneVOne,
     onClose,
 }: QuestBoardSceneProps) {
     const [quests, setQuests] = useState<Quest[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [dailyQuest, setDailyQuest] = useState<Quest | null>(null);
     const [rankFilter, setRankFilter] = useState<number>(user.rank);
 
     useEffect(() => {
@@ -47,10 +50,18 @@ export default function QuestBoardScene({
             setLoading(true);
             setError(null);
             try {
+                // Fetch normal quests
                 const res = await fetch(`${BACKEND_CORE_URL}/api/quests`);
                 if (!res.ok) throw new Error("Failed to fetch quests");
                 const data: Quest[] = await res.json();
                 setQuests(data);
+
+                // Fetch daily quest
+                const dailyRes = await fetch(`${BACKEND_CORE_URL}/api/quests/daily`);
+                if (dailyRes.ok) {
+                    const dailyData = await dailyRes.json();
+                    setDailyQuest(dailyData);
+                }
             } catch (err) {
                 setError("Could not load quests. Check your connection.");
                 console.error(err);
@@ -103,6 +114,13 @@ export default function QuestBoardScene({
                         style={{ fontSize: "10px", padding: "10px 16px" }}
                     >
                         ← Back
+                    </button>
+                    <button
+                        className="pixel-btn"
+                        onClick={onGoToOneVOne}
+                        style={{ fontSize: "10px", padding: "10px 16px", background: "#b45309", borderColor: "#f5c842" }}
+                    >
+                        ⚔ 1v1 Battle
                     </button>
                     <div>
                         <h1
@@ -202,6 +220,63 @@ export default function QuestBoardScene({
                             gap: "24px",
                         }}
                     >
+                        {/* Daily Quest Section */}
+                        {dailyQuest && (
+                            <div style={{ gridColumn: "1 / -1", marginBottom: "20px" }}>
+                                <div style={{
+                                    background: "linear-gradient(90deg, #5c3317 0%, #1a1008 100%)",
+                                    padding: "10px 20px",
+                                    borderLeft: "5px solid #f5c842",
+                                    marginBottom: "15px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "15px"
+                                }}>
+                                    <span style={{ fontSize: "20px" }}>⭐</span>
+                                    <h2 style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "16px", color: "#f5c842", margin: 0 }}>DAILY QUEST (3X EXP!)</h2>
+                                </div>
+
+                                <div
+                                    style={{
+                                        background: "rgba(40, 25, 12, 0.95)",
+                                        border: "4px solid #f5c842",
+                                        boxShadow: "0 0 20px rgba(245,200,66,0.2)",
+                                        padding: "24px",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        gap: "20px",
+                                        flexWrap: "wrap"
+                                    }}
+                                >
+                                    <div style={{ flex: 1, minWidth: "300px" }}>
+                                        <h3 style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "18px", color: "#fff", margin: "0 0 10px" }}>{dailyQuest.title}</h3>
+                                        <p style={{ fontFamily: "var(--font-pixel), monospace", fontSize: "11px", color: "#c4a882", margin: "0 0 15px", lineHeight: 1.8 }}>{dailyQuest.description}</p>
+                                        <div style={{ display: "flex", gap: "20px" }}>
+                                            <StarRating count={dailyQuest.difficulty} />
+                                            <div style={{ background: "#0d2010", border: "1px solid #4ade80", padding: "4px 8px", color: "#4ade80", fontSize: "10px", fontFamily: "var(--font-pixel)" }}>
+                                                ⚡ {dailyQuest.expReward} EXP
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="pixel-btn"
+                                        onClick={() => onTakeQuest(dailyQuest)}
+                                        style={{ fontSize: "14px", padding: "15px 30px", background: "#f5c842", color: "#1a1008" }}
+                                    >
+                                        Take Daily Quest →
+                                    </button>
+                                </div>
+
+                                <div style={{ height: "40px" }} />
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", opacity: 0.5 }}>
+                                    <div style={{ flex: 1, height: "2px", background: "#3a1f0a" }} />
+                                    <span style={{ fontFamily: "var(--font-pixel)", fontSize: "10px", color: "#5c3317" }}>REGULAR QUESTS</span>
+                                    <div style={{ flex: 1, height: "2px", background: "#3a1f0a" }} />
+                                </div>
+                            </div>
+                        )}
+
                         {quests.map((quest) => {
                             const locked = quest.requiredRank > user.rank;
                             const hiddenByFilter = quest.requiredRank > rankFilter;

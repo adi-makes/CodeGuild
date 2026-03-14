@@ -4,7 +4,8 @@ export type Scene =
     | "guild-interior"
     | "quest-board"
     | "submission"
-    | "leaderboard";
+    | "leaderboard"
+    | "one-v-one";
 
 export interface UserData {
     userId: string;
@@ -30,6 +31,7 @@ export interface Quest {
     requiredRank: number; // 1-5
     expReward: number;
     evaluationCriteria: string;
+    isDaily?: boolean;
 }
 
 export interface EvalResult {
@@ -59,3 +61,20 @@ export const RANK_EXP: Record<number, number> = {
 };
 
 export const MAX_RANK = 5;
+
+export interface Room {
+    id: string;
+    code: string;
+    creatorId: string;
+    joinerId: string | null;
+    questId: string;
+    status: "waiting" | "started" | "finished" | "cancelled";
+    winnerId: string | null;
+    creatorCode?: string;
+    joinerCode?: string;
+    creatorResult?: EvalResult;
+    joinerResult?: EvalResult;
+    creatorFinished?: boolean;
+    joinerFinished?: boolean;
+    createdAt: any;
+}

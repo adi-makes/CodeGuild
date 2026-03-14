@@ -7,9 +7,14 @@ const firebaseConfig = {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
 };
 
+if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || !process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) {
+    console.warn("Firebase configuration is incomplete. Authentication may not work correctly.");
+}
+
 console.log("Firebase Config:", {
     ...firebaseConfig,
-    apiKey: firebaseConfig.apiKey ? "PRESENT" : "MISSING" // don't log the actual key
+    apiKey: firebaseConfig.apiKey ? "PRESENT" : "MISSING",
+    authDomain: firebaseConfig.authDomain ? "PRESENT" : "MISSING"
 });
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();

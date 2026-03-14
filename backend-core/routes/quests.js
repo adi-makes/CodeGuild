@@ -24,4 +24,27 @@ router.get('/', (req, res) => {
     }
 });
 
+/**
+ * GET /api/quests/daily
+ * Returns a consistent quest for today with triple EXP reward
+ */
+router.get('/daily', (req, res) => {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const seed = today.split('-').reduce((sum, val) => sum + parseInt(val, 10), 0);
+        const dailyIndex = seed % quests.length;
+        const quest = quests[dailyIndex];
+
+        // Return with isDaily flag and boosted reward
+        return res.json({
+            ...quest,
+            isDaily: true,
+            expReward: quest.expReward * 3
+        });
+    } catch (err) {
+        console.error('[quests/daily]', err);
+        res.status(500).json({ error: 'Failed to fetch daily quest' });
+    }
+});
+
 module.exports = router;
