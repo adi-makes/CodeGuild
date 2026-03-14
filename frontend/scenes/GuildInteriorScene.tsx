@@ -8,11 +8,15 @@ import HUD from "@/components/HUD";
 interface GuildInteriorSceneProps {
     user: UserData;
     onGoToQuestBoard: () => void;
+    onGoToLeaderboard: () => void;
+    onLeaveGuild: () => void;
 }
 
 export default function GuildInteriorScene({
     user,
     onGoToQuestBoard,
+    onGoToLeaderboard,
+    onLeaveGuild,
 }: GuildInteriorSceneProps) {
     const [showModal, setShowModal] = useState(false);
 
@@ -35,6 +39,17 @@ export default function GuildInteriorScene({
                 priority
             />
 
+            {/* Back / Leave Guild Button */}
+            <div style={{ position: "absolute", top: "24px", left: "40px", zIndex: 10 }}>
+                <button
+                    className="pixel-btn"
+                    onClick={onLeaveGuild}
+                    style={{ fontSize: "6px", padding: "8px 12px" }}
+                >
+                    ← Exit to Town
+                </button>
+            </div>
+
             {/* Dark vignette */}
             <div
                 style={{
@@ -54,7 +69,6 @@ export default function GuildInteriorScene({
                 title="Talk to receptionist"
                 style={{
                     position: "absolute",
-                    /* The receptionist is in the top-center of interior1.jpg */
                     top: "25%",
                     left: "42%",
                     width: "16%",
@@ -73,7 +87,6 @@ export default function GuildInteriorScene({
                 title="View Quest Board"
                 style={{
                     position: "absolute",
-                    /* The right noticeboard is in upper-right area */
                     top: "12%",
                     right: "12%",
                     width: "18%",
@@ -85,7 +98,25 @@ export default function GuildInteriorScene({
                 }}
             />
 
-            {/* Labels for hotspots */}
+            {/* === Hotspot 3 — Leaderboard (left side) === */}
+            <div
+                className="hotspot"
+                onClick={onGoToLeaderboard}
+                title="View Leaderboard"
+                style={{
+                    position: "absolute",
+                    top: "12%",
+                    left: "12%",
+                    width: "18%",
+                    height: "30%",
+                    zIndex: 3,
+                    border: "2px dashed rgba(74, 222, 128, 0.45)",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                }}
+            />
+
+            {/* Receptionist label */}
             <div
                 style={{
                     position: "absolute",
@@ -118,6 +149,7 @@ export default function GuildInteriorScene({
                 </div>
             </div>
 
+            {/* Quest Board label */}
             <div
                 style={{
                     position: "absolute",
@@ -144,6 +176,38 @@ export default function GuildInteriorScene({
                         }}
                     >
                         ▲ Quest Board
+                    </p>
+                </div>
+            </div>
+
+            {/* Leaderboard label — clickable */}
+            <div
+                style={{
+                    position: "absolute",
+                    top: "44%",
+                    left: "13%",
+                    zIndex: 4,
+                    cursor: "pointer",
+                }}
+                onClick={onGoToLeaderboard}
+            >
+                <div
+                    style={{
+                        background: "rgba(26, 16, 8, 0.88)",
+                        border: "2px solid #4ade80",
+                        padding: "6px 12px",
+                        textAlign: "center",
+                    }}
+                >
+                    <p
+                        style={{
+                            fontFamily: "var(--font-pixel), monospace",
+                            fontSize: "7px",
+                            color: "#4ade80",
+                            margin: 0,
+                        }}
+                    >
+                        🏆 Leaderboard
                     </p>
                 </div>
             </div>
@@ -176,7 +240,6 @@ export default function GuildInteriorScene({
                             width: "90vw",
                         }}
                     >
-                        {/* NPC portrait */}
                         <div style={{ display: "flex", alignItems: "flex-start", gap: "20px", marginBottom: "24px" }}>
                             <div
                                 style={{
@@ -242,8 +305,7 @@ export default function GuildInteriorScene({
                                 margin: "0 0 24px",
                             }}
                         >
-                            Click the Quest Board on your right to browse available quests.
-                            Good luck on your journey! ⚔️
+                            Click the Quest Board on your right, or the Leaderboard on your left. Good luck! ⚔️
                         </p>
 
                         <button

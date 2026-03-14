@@ -3,7 +3,8 @@ export type Scene =
     | "town"
     | "guild-interior"
     | "quest-board"
-    | "submission";
+    | "submission"
+    | "leaderboard";
 
 export interface UserData {
     userId: string;

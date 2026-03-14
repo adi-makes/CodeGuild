@@ -116,16 +116,9 @@ export default function SubmissionScene({
                 }}
             >
                 <button
+                    className="pixel-btn"
                     onClick={onBackToQuestBoard}
-                    style={{
-                        fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "9px",
-                        background: "transparent",
-                        color: "#a88b6a",
-                        border: "2px solid #a88b6a",
-                        padding: "6px 12px",
-                        cursor: "pointer",
-                    }}
+                    style={{ fontSize: "6px", padding: "8px 12px" }}
                 >
                     ← Back
                 </button>

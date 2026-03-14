@@ -8,6 +8,7 @@ import TownScene from "@/scenes/TownScene";
 import GuildInteriorScene from "@/scenes/GuildInteriorScene";
 import QuestBoardScene from "@/scenes/QuestBoardScene";
 import SubmissionScene from "@/scenes/SubmissionScene";
+import LeaderboardScene from "@/scenes/LeaderboardScene";
 
 const LOADING_DURATION_MS = 1500;
 
@@ -73,7 +74,7 @@ export default function Home() {
 
     case "town":
       if (!userData) return <LoginScene onLogin={handleLogin} />;
-      return <TownScene user={userData} onEnterGuild={handleEnterGuild} />;
+      return <TownScene user={userData} onEnterGuild={handleEnterGuild} onLogout={() => navigateTo("login", "Logging out...")} />;
 
     case "guild-interior":
       if (!userData) return <LoginScene onLogin={handleLogin} />;
@@ -81,6 +82,17 @@ export default function Home() {
         <GuildInteriorScene
           user={userData}
           onGoToQuestBoard={handleGoToQuestBoard}
+          onGoToLeaderboard={() => navigateTo("leaderboard", "Loading Hall of Legends...")}
+          onLeaveGuild={() => navigateTo("town", "Returning to town...")}
+        />
+      );
+
+    case "leaderboard":
+      if (!userData) return <LoginScene onLogin={handleLogin} />;
+      return (
+        <LeaderboardScene
+          user={userData}
+          onGoBack={() => navigateTo("guild-interior", "Returning to guild hall...")}
         />
       );
 
@@ -90,12 +102,13 @@ export default function Home() {
         <QuestBoardScene
           user={userData}
           onTakeQuest={handleTakeQuest}
+          onClose={() => navigateTo("guild-interior", "Returning to guild hall...")}
         />
       );
 
     case "submission":
       if (!userData || !selectedQuest)
-        return <QuestBoardScene user={userData!} onTakeQuest={handleTakeQuest} />;
+        return <QuestBoardScene user={userData!} onTakeQuest={handleTakeQuest} onClose={() => navigateTo("guild-interior", "Returning...")} />;
       return (
         <SubmissionScene
           user={userData}

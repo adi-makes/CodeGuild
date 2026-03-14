@@ -75,6 +75,26 @@ router.post('/', async (req, res) => {
         const { score, feedback, flags } = evalResult;
         const { expEarned, accepted } = calculateExpEarned(score, quest.expReward);
 
+        // --- Duplicate-completion check ---
+        const existingQuests = userData.completedQuests || [];
+        const alreadyCompleted = existingQuests.some(
+            (q) => (typeof q === 'string' ? q === questId : q.questId === questId)
+        );
+
+        // If already completed, return feedback & score but don't award exp again
+        if (alreadyCompleted) {
+            return res.json({
+                score,
+                feedback: `[Quest already completed] ${feedback}`,
+                flags: flags || [],
+                expEarned: 0,
+                accepted,
+                newTotalExp: userData.totalExp,
+                newRank: userData.rank,
+                alreadyCompleted: true,
+            });
+        }
+
         const newTotalExp = userData.totalExp + expEarned;
         const newRank = getRankForExp(newTotalExp);
 
@@ -85,11 +105,26 @@ router.post('/', async (req, res) => {
             submittedAt: admin.firestore.Timestamp.now(),
         };
 
+        // 1. Update primary User profile
         await userRef.update({
             totalExp: newTotalExp,
             rank: newRank,
             completedQuests: admin.firestore.FieldValue.arrayUnion(completedEntry),
         });
+
+        // 2. Update Leaderboard profile ONLY if quest was accepted
+        if (accepted) {
+            const leaderboardRef = db.collection('leaderboard').doc(userId);
+            await leaderboardRef.set({
+                userId: userData.userId,
+                displayName: userData.displayName || 'Adventurer',
+                rank: newRank,
+                totalExp: newTotalExp,
+                completedQuests: admin.firestore.FieldValue.arrayUnion(questId),
+                questsDoneCount: admin.firestore.FieldValue.increment(1),
+                lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
 
         return res.json({
             score,

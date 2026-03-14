@@ -5,31 +5,71 @@ const quests = require('../data/quests.json');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const SYSTEM_INSTRUCTION = `You are a strict but fair code evaluator for a coding guild platform.
-You will receive a quest description, an evaluation rubric, and a code submission.
-Evaluate the code and return ONLY a valid JSON object with no markdown, no backticks,
-no explanation outside the JSON. The JSON must have exactly these fields:
-- score: integer from 0 to 100
-- feedback: string, 2-3 sentences explaining the score
-- flags: array of strings, each describing a specific issue (empty array if none)`;
+const RANK_NAMES = {
+    1: 'Novice',
+    2: 'Apprentice',
+    3: 'Journeyman',
+    4: 'Adept',
+    5: 'Master',
+};
+
+const DIFFICULTY_LABELS = {
+    1: 'Beginner (very easy)',
+    2: 'Easy',
+    3: 'Intermediate',
+    4: 'Advanced',
+    5: 'Expert (very hard)',
+};
 
 /**
- * Call Gemini and attempt to parse JSON from the response.
- * @param {object} quest
- * @param {string} code
- * @returns {Promise<{ score: number, feedback: string, flags: string[] }>}
+ * Build a rich, level-aware system prompt.
+ */
+function buildSystemInstruction(quest) {
+    const rankName = RANK_NAMES[quest.requiredRank] || `Rank ${quest.requiredRank}`;
+    const diffLabel = DIFFICULTY_LABELS[quest.difficulty] || `Difficulty ${quest.difficulty}`;
+
+    return `You are a strict but fair code evaluator for a coding guild game platform.
+
+CONTEXT:
+- Quest Level: ${rankName} (Rank ${quest.requiredRank} of 5)
+- Quest Difficulty: ${diffLabel} (${quest.difficulty}/5)
+- Quest Title: "${quest.title}"
+
+GRADING GUIDELINES based on difficulty:
+- Rank 1 (Novice): Accept basic solutions, syntax errors should lower score but not disqualify.
+- Rank 2 (Apprentice): Logic must be sound. Minor style issues are OK.
+- Rank 3 (Journeyman): Code should be clean, correct, and handle edge cases.
+- Rank 4 (Adept): Must handle edge cases, be efficient, and well-structured.
+- Rank 5 (Master): Must be algorithmically correct, efficient, and nearly production-ready.
+
+An ACCEPTED submission earns EXP in the game. Use score >= 60 as the threshold for acceptance.
+
+Return ONLY a valid JSON object — no markdown, no backticks, no prose outside JSON. The JSON must have exactly these fields:
+- score: integer 0-100
+- feedback: string (2-3 sentences explaining the score, mention the level of the quest)
+- flags: array of strings, each a specific issue (empty array if none)
+- isCorrect: boolean (true if score >= 60)`;
+}
+
+/**
+ * Call Gemini AI with the quest and user code.
  */
 async function callGemini(quest, code) {
     const model = genAI.getGenerativeModel({
         model: 'gemini-1.5-flash',
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: buildSystemInstruction(quest),
     });
 
-    const userMessage = `Quest Title: ${quest.title}
-Quest Description: ${quest.description}
-Evaluation Criteria: ${quest.evaluationCriteria}
+    const userMessage = `Quest Description:
+${quest.description}
+
+Evaluation Criteria:
+${quest.evaluationCriteria}
+
 Submitted Code:
+\`\`\`
 ${code}
+\`\`\`
 
 Evaluate this submission and return the JSON.`;
 
@@ -63,7 +103,6 @@ router.post('/', async (req, res) => {
         parsed = await callGemini(quest, code);
     } catch (err) {
         console.warn('[evaluate] First Gemini attempt failed:', err.message);
-        // Retry once
         try {
             parsed = await callGemini(quest, code);
         } catch (retryErr) {
@@ -72,6 +111,7 @@ router.post('/', async (req, res) => {
                 score: 0,
                 feedback: 'Evaluation failed due to a service error. Please resubmit.',
                 flags: [],
+                isCorrect: false,
             });
         }
     }
@@ -87,13 +127,16 @@ router.post('/', async (req, res) => {
             score: 0,
             feedback: 'Evaluation returned an unexpected format. Please resubmit.',
             flags: [],
+            isCorrect: false,
         });
     }
 
+    const score = Math.min(100, Math.max(0, Math.round(parsed.score)));
     return res.json({
-        score: Math.min(100, Math.max(0, Math.round(parsed.score))),
+        score,
         feedback: parsed.feedback,
         flags: parsed.flags,
+        isCorrect: parsed.isCorrect ?? score >= 60,
     });
 });
 

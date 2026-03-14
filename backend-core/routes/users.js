@@ -56,6 +56,49 @@ router.post('/init', async (req, res) => {
 });
 
 /**
+ * GET /api/users/leaderboard
+ * Supports optional ?rank=1 to filter by rank level.
+ * IMPORTANT: Must be before /:userId to avoid Express matching 'leaderboard' as a userId.
+ * Fetches all docs and sorts/filters in memory to avoid composite index requirement.
+ */
+router.get('/leaderboard', async (req, res) => {
+    try {
+        const { db } = req.getFirebase();
+
+        // Fetch all leaderboard docs without orderBy to avoid composite index
+        const usersSnap = await db.collection('leaderboard').limit(100).get();
+
+        let leaderboard = [];
+        usersSnap.forEach(doc => {
+            const data = doc.data();
+            leaderboard.push({
+                userId: data.userId,
+                displayName: data.displayName,
+                rank: data.rank,
+                totalExp: data.totalExp || 0,
+                completedQuests: data.completedQuests || [],
+            });
+        });
+
+        // Filter by rank if provided
+        if (req.query.rank) {
+            const rank = parseInt(req.query.rank, 10);
+            if (!isNaN(rank)) {
+                leaderboard = leaderboard.filter(u => u.rank === rank);
+            }
+        }
+
+        // Sort by totalExp descending in memory
+        leaderboard.sort((a, b) => b.totalExp - a.totalExp);
+
+        return res.json(leaderboard.slice(0, 50));
+    } catch (err) {
+        console.error('[users/leaderboard]', err.message);
+        res.status(500).json({ error: err.message || 'Failed to fetch leaderboard' });
+    }
+});
+
+/**
  * GET /api/users/:userId
  */
 router.get('/:userId', async (req, res) => {
@@ -73,5 +116,7 @@ router.get('/:userId', async (req, res) => {
         res.status(500).json({ error: err.message || 'Failed to fetch user' });
     }
 });
+
+
 
 module.exports = router;

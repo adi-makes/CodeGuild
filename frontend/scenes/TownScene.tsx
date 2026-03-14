@@ -7,9 +7,10 @@ import HUD from "@/components/HUD";
 interface TownSceneProps {
     user: UserData;
     onEnterGuild: () => void;
+    onLogout: () => void;
 }
 
-export default function TownScene({ user, onEnterGuild }: TownSceneProps) {
+export default function TownScene({ user, onEnterGuild, onLogout }: TownSceneProps) {
     return (
         <div
             style={{
@@ -20,6 +21,21 @@ export default function TownScene({ user, onEnterGuild }: TownSceneProps) {
                 background: "#0a0a0a",
             }}
         >
+            <style>{`
+                @keyframes pulse-glow {
+                    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(245, 200, 66, 0.6); }
+                    50% { opacity: 0.6; box-shadow: 0 0 24px rgba(245, 200, 66, 1); }
+                }
+                @keyframes bounce-arrow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-6px); }
+                }
+                .guild-enter-btn:hover {
+                    background: rgba(245, 200, 66, 0.2) !important;
+                    border-color: #f5c842 !important;
+                }
+            `}</style>
+
             {/* Background — town map */}
             <Image
                 src="/town.jpeg"
@@ -29,29 +45,36 @@ export default function TownScene({ user, onEnterGuild }: TownSceneProps) {
                 priority
             />
 
-            {/* Subtle dark overlay at edges */}
+            {/* Logout Button */}
+            <div style={{ position: "absolute", top: "24px", left: "40px", zIndex: 10 }}>
+                <button
+                    className="pixel-btn"
+                    onClick={onLogout}
+                    style={{ fontSize: "6px", padding: "8px 12px", background: "#8b0000", borderColor: "#ff4d4d" }}
+                >
+                    ← Logout
+                </button>
+            </div>
+
+            {/* Dark overlay */}
             <div
                 style={{
                     position: "absolute",
                     inset: 0,
-                    background:
-                        "radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.5) 100%)",
+                    background: "radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.5) 100%)",
                     pointerEvents: "none",
                     zIndex: 1,
                 }}
             />
 
-            {/* Guild Hall Building —positioned as an overlay, centered/slightly upper area */}
-            {/* The guild_final.png is the pixel guild hall building, shown prominently */}
+            {/* Guild Hall Building */}
             <div
                 style={{
                     position: "absolute",
-                    /* Center the building horizontally, place in upper-center of scene */
                     left: "50%",
                     top: "30%",
                     transform: "translate(-50%, -50%)",
                     zIndex: 2,
-                    /* The building image itself: THIS IS WHAT YOU ADJUST */
                     width: "clamp(200px, 30vw, 380px)",
                     height: "auto",
                 }}
@@ -61,61 +84,84 @@ export default function TownScene({ user, onEnterGuild }: TownSceneProps) {
                     alt="Guild Hall"
                     width={380}
                     height={380}
-                    style={{
-                        imageRendering: "pixelated",
-                        width: "100%",
-                        height: "auto",
-                        display: "block",
-                    }}
+                    style={{ imageRendering: "pixelated", width: "100%", height: "auto", display: "block" }}
                 />
             </div>
 
-            {/* Invisible clickable hotspot over guild building door area */}
+            {/* Large clickable hotspot — covers the whole building */}
             <div
-                className="hotspot"
+                className="hotspot guild-enter-btn"
                 onClick={onEnterGuild}
                 title="Enter Guild Hall"
                 style={{
                     position: "absolute",
                     left: "50%",
-                    top: "38%",
+                    top: "16%",
                     transform: "translateX(-50%)",
-                    width: "clamp(80px, 10vw, 120px)",
-                    height: "clamp(60px, 8vh, 100px)",
+                    width: "clamp(200px, 32vw, 400px)",
+                    height: "clamp(180px, 28vh, 320px)",
                     zIndex: 3,
-                    /* Subtle visible outline in dev — remove in prod */
-                    border: "2px dashed rgba(245, 200, 66, 0.4)",
-                    borderRadius: "4px",
+                    border: "3px dashed rgba(245, 200, 66, 0.6)",
+                    borderRadius: "8px",
                     cursor: "pointer",
+                    background: "transparent",
+                    transition: "background 0.2s, border-color 0.2s",
                 }}
             />
 
-            {/* "Enter Guild" hint label */}
+            {/* Pulsing "Enter Guild Hall" CTA */}
             <div
                 style={{
                     position: "absolute",
                     left: "50%",
-                    top: "calc(38% + clamp(70px, 9vh, 110px))",
+                    top: "48%",
                     transform: "translateX(-50%)",
-                    zIndex: 3,
-                    background: "rgba(26, 16, 8, 0.9)",
-                    border: "2px solid #f5c842",
-                    padding: "6px 12px",
+                    zIndex: 4,
                     pointerEvents: "none",
+                    textAlign: "center",
                 }}
             >
-                <p
+                <div
                     style={{
-                        fontFamily: "var(--font-pixel), monospace",
-                        fontSize: "7px",
-                        color: "#f5c842",
-                        margin: 0,
-                        letterSpacing: "1px",
-                        whiteSpace: "nowrap",
+                        display: "inline-flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "6px",
                     }}
                 >
-                    ▲ Click to enter
-                </p>
+                    <span
+                        style={{
+                            fontFamily: "var(--font-pixel), monospace",
+                            fontSize: "8px",
+                            color: "#fbbf24",
+                            animation: "bounce-arrow 1.2s ease-in-out infinite",
+                            display: "block",
+                        }}
+                    >
+                        ▲
+                    </span>
+                    <div
+                        style={{
+                            background: "rgba(26, 16, 8, 0.95)",
+                            border: "3px solid #f5c842",
+                            padding: "8px 20px",
+                            animation: "pulse-glow 2s ease-in-out infinite",
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "8px",
+                                color: "#f5c842",
+                                margin: 0,
+                                letterSpacing: "1px",
+                                whiteSpace: "nowrap",
+                            }}
+                        >
+                            🏰 ENTER GUILD HALL
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* HUD */}

@@ -11,6 +11,7 @@ const BACKEND_CORE_URL =
 interface QuestBoardSceneProps {
     user: UserData;
     onTakeQuest: (quest: Quest) => void;
+    onClose: () => void;
 }
 
 function StarRating({ count }: { count: number }) {
@@ -34,6 +35,7 @@ function StarRating({ count }: { count: number }) {
 export default function QuestBoardScene({
     user,
     onTakeQuest,
+    onClose,
 }: QuestBoardSceneProps) {
     const [quests, setQuests] = useState<Quest[]>([]);
     const [loading, setLoading] = useState(true);
@@ -94,28 +96,37 @@ export default function QuestBoardScene({
                     zIndex: 10,
                 }}
             >
-                <div>
-                    <h1
-                        style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "16px",
-                            color: "#f5c842",
-                            margin: "0 0 6px",
-                            textShadow: "3px 3px 0 #3a1f0a",
-                        }}
+                <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                    <button
+                        className="pixel-btn"
+                        onClick={onClose}
+                        style={{ fontSize: "6px", padding: "8px 12px" }}
                     >
-                        ⚔ Quest Board
-                    </h1>
-                    <p
-                        style={{
-                            fontFamily: "var(--font-pixel), monospace",
-                            fontSize: "7px",
-                            color: "#a88b6a",
-                            margin: 0,
-                        }}
-                    >
-                        Take a quest, submit code, earn EXP
-                    </p>
+                        ← Back
+                    </button>
+                    <div>
+                        <h1
+                            style={{
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "16px",
+                                color: "#f5c842",
+                                margin: "0 0 6px",
+                                textShadow: "3px 3px 0 #3a1f0a",
+                            }}
+                        >
+                            ⚔ Quest Board
+                        </h1>
+                        <p
+                            style={{
+                                fontFamily: "var(--font-pixel), monospace",
+                                fontSize: "7px",
+                                color: "#a88b6a",
+                                margin: 0,
+                            }}
+                        >
+                            Take a quest, submit code, earn EXP
+                        </p>
+                    </div>
                 </div>
 
                 {/* Rank filter */}

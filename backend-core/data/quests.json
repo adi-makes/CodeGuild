@@ -1,47 +1,137 @@
 [
     {
-        "id": "q1",
-        "title": "FizzBuzz",
-        "description": "Write a function fizzBuzz(n) that returns an array of strings for numbers 1 to n. For multiples of 3, use 'Fizz'; for multiples of 5, use 'Buzz'; for multiples of both, use 'FizzBuzz'; otherwise use the number as a string.",
+        "id": "l1_q1",
+        "title": "L1.Quest 1: The First Spell",
+        "description": "Write a program that prints the message \"Welcome to CodeGuild, Apprentice!\"",
         "difficulty": 1,
         "requiredRank": 1,
         "expReward": 50,
-        "evaluationCriteria": "The solution must correctly output Fizz for multiples of 3, Buzz for multiples of 5, FizzBuzz for multiples of both, and the number as a string otherwise. Check for correct loop bounds (1 to n inclusive), proper return type (array of strings), and edge cases like n=0 or n=1."
+        "evaluationCriteria": "The solution must correctly output exactly \"Welcome to CodeGuild, Apprentice!\" using standard console logging or printing."
     },
     {
-        "id": "q2",
-        "title": "Reverse a String",
-        "description": "Write a function reverseString(s) that returns the input string reversed. Do not use the built-in .reverse() method on an array (splitting and reversing is acceptable). Handle empty strings and single characters correctly.",
+        "id": "l1_q2",
+        "title": "L1.Quest 2: The Twin Potion Swap",
+        "description": "Two variables A and B store values. Swap their values.",
         "difficulty": 1,
         "requiredRank": 1,
-        "expReward": 60,
-        "evaluationCriteria": "The solution must correctly reverse any string, including empty strings and palindromes. Penalize solutions that mutate the input or only work for ASCII. Reward solutions that are concise and readable. Using split+reverse+join is acceptable for MVP."
+        "expReward": 50,
+        "evaluationCriteria": "The solution must demonstrate swapping two variables (e.g. using a temporary variable, or destructuring). It should output the swapped values correctly."
     },
     {
-        "id": "q3",
-        "title": "Find Duplicates in Array",
-        "description": "Write a function findDuplicates(arr) that takes an array of integers and returns an array containing only the elements that appear more than once. The result array should have no duplicates itself. Order does not matter.",
+        "id": "l1_q3",
+        "title": "L1.Quest 3: The Loop of Endless Counting",
+        "description": "Write a program that prints numbers from 1 to N.",
+        "difficulty": 2,
+        "requiredRank": 1,
+        "expReward": 100,
+        "evaluationCriteria": "The solution must print all numbers from 1 to N cleanly using a loop. Ensure upper and lower bounds are inclusive."
+    },
+    {
+        "id": "l2_q1",
+        "title": "L2.Quest 1: The Mirror of Strings",
+        "description": "Determine whether a given string is a palindrome.",
         "difficulty": 2,
         "requiredRank": 2,
-        "expReward": 120,
-        "evaluationCriteria": "The function must correctly identify all duplicate values. The returned array should not contain any value more than once even if it appears 3+ times in the input. Check for edge cases: empty array, array with all unique values, array where all elements are the same. A linear time solution using a frequency map is preferred over a nested loop approach."
+        "expReward": 150,
+        "evaluationCriteria": "The function should return true if the string is a palindrome and false otherwise. Code should handle edge cases like casing and single character strings."
     },
     {
-        "id": "q4",
-        "title": "Binary Search",
-        "description": "Implement binarySearch(sortedArr, target) that searches for target in a sorted array of integers and returns its index, or -1 if not found. You must implement the binary search algorithm — do not use linear scan or built-in search methods.",
+        "id": "l2_q2",
+        "title": "L2.Quest 2: The Fibonacci Prophecy",
+        "description": "Generate the first N numbers of the Fibonacci sequence.",
+        "difficulty": 3,
+        "requiredRank": 2,
+        "expReward": 200,
+        "evaluationCriteria": "The solution must correctly generate the first N digits of the Fibonacci series starting from 0 and 1. Output the sequence cleanly."
+    },
+    {
+        "id": "l2_q3",
+        "title": "L2.Quest 3: The Second Strongest Warrior",
+        "description": "Find the second largest number in an array.",
+        "difficulty": 3,
+        "requiredRank": 2,
+        "expReward": 150,
+        "evaluationCriteria": "Scan the array and identify the second largest value. Duplicates should be correctly ignored (e.g., [10, 10, 8] -> 8). Do not sort the entire array if possible to prioritize runtime."
+    },
+    {
+        "id": "l3_q1",
+        "title": "L3.Quest 1: The Reversal Rune",
+        "description": "Write a program that reverses a string.",
+        "difficulty": 2,
+        "requiredRank": 3,
+        "expReward": 250,
+        "evaluationCriteria": "Must correctly reverse the characters of a string and handle empty strings. Cannot rely on basic built-in Array reverse if specified."
+    },
+    {
+        "id": "l3_q2",
+        "title": "L3.Quest 2: The Frequency Oracle",
+        "description": "Find the most frequent character in a string.",
         "difficulty": 3,
         "requiredRank": 3,
-        "expReward": 200,
-        "evaluationCriteria": "The implementation must use the binary search algorithm with O(log n) time complexity. Check that the mid calculation avoids integer overflow (use Math.floor((lo+hi)/2) or equivalent). Must correctly handle: empty array, single element, target at first/last position, target not present. Penalize solutions that use linear scan."
+        "expReward": 250,
+        "evaluationCriteria": "Count the frequencies of all characters and return the one with the highest count. In cases of ties, return the first one encountered."
     },
     {
-        "id": "q5",
-        "title": "LRU Cache",
-        "description": "Implement an LRU (Least Recently Used) Cache class with a fixed capacity. It should support two operations: get(key) — return the value if it exists, otherwise -1, and put(key, value) — insert or update the key-value pair. If the cache reaches capacity, evict the least recently used item before inserting. Both operations must run in O(1) average time.",
+        "id": "l3_q3",
+        "title": "L3.Quest 3: The Guild Scroll",
+        "description": "Create a basic HTML webpage displaying:\n\nYour Name\nGuild Rank\nFavorite Programming Language",
+        "difficulty": 2,
+        "requiredRank": 3,
+        "expReward": 200,
+        "evaluationCriteria": "Provide valid HTML markup containing the specific structured information in semantic tags (e.g. h1, p, ul, etc.)."
+    },
+    {
+        "id": "l4_q1",
+        "title": "L4.Quest 1: The Hidden Message Toggle",
+        "description": "Create a webpage where a hidden message appears when a button is clicked.",
+        "difficulty": 3,
+        "requiredRank": 4,
+        "expReward": 300,
+        "evaluationCriteria": "The HTML must include a button and a hidden text block. Provide the JavaScript logic (event listener) to toggle the visibility of the text block."
+    },
+    {
+        "id": "l4_q2",
+        "title": "L4.Quest 2: The Click Counter Relic",
+        "description": "Create a webpage with a button that counts how many times it is clicked.",
+        "difficulty": 3,
+        "requiredRank": 4,
+        "expReward": 300,
+        "evaluationCriteria": "The HTML must contain a button and text indicating the count. Provide JavaScript that initializes a state, adds an event listener to the button, and increments the displayed count on each click."
+    },
+    {
+        "id": "l4_q3",
+        "title": "L4.Quest 3: The Stack of Forgotten Spells",
+        "description": "Implement a Stack with operations:\npush()\npop()\npeek()",
         "difficulty": 4,
         "requiredRank": 4,
-        "expReward": 350,
-        "evaluationCriteria": "The LRU Cache must correctly implement get and put in O(1) time. The standard approach is a doubly linked list combined with a hash map. Verify: eviction happens when capacity is exceeded, get and put both count as 'use' for LRU purposes, capacity=1 edge case works, getting a non-existent key returns -1. Penalize solutions that use built-in OrderedDict or similar shortcuts unless the logic is correct."
+        "expReward": 400,
+        "evaluationCriteria": "Implement a valid Stack data structure (class or functions). Must correctly handle pushing values, popping the top, and returning the top without removing via peek()."
+    },
+    {
+        "id": "l5_q1",
+        "title": "L5.Quest 1: The Coin Oracle",
+        "description": "Given coin denominations and a target amount, find the minimum number of coins required.",
+        "difficulty": 5,
+        "requiredRank": 5,
+        "expReward": 600,
+        "evaluationCriteria": "Must implement the minimum coin change algorithm perfectly using dynamic programming or BFS. Check edge cases like if change cannot be made exactly."
+    },
+    {
+        "id": "l5_q2",
+        "title": "L5.Quest 2: The Path of Shortest Fate",
+        "description": "Given a weighted graph, find the shortest path from a starting node to all other nodes.",
+        "difficulty": 5,
+        "requiredRank": 5,
+        "expReward": 700,
+        "evaluationCriteria": "Implement Dijkstra's Algorithm or an equivalent robust shortest-path finder. Ensure correct behavior on loops and unreachable nodes."
+    },
+    {
+        "id": "l5_q3",
+        "title": "L5.Quest 3: The Prefix Tree of Knowledge",
+        "description": "Implement a Trie (Prefix Tree) with the operations:\ninsert(word)\nsearch(word)\nstartsWith(prefix)",
+        "difficulty": 5,
+        "requiredRank": 5,
+        "expReward": 700,
+        "evaluationCriteria": "Correctly structure a Trie node class and Trie orchestrator. Methods must properly navigate character pathways. Ensure search vs startsWith handles full-word ending markers appropriately."
     }
 ]

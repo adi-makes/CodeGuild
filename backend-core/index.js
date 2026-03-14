@@ -5,7 +5,17 @@ const cors = require('cors');
 // --- Express App ---
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow any localhost origin (3000, 3001, 3003, etc.) or no origin (curl/Postman)
+        if (!origin || origin.startsWith('http://localhost')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+}));
 app.use(express.json());
 
 // --- Lazy Firebase Admin Init ---
